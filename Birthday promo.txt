@@ -1,0 +1,37 @@
+﻿Birthday promo
+
+
+Birthday promo service
+Every day get a list of customers whose birthday is a week from today from customers service
+Populate db with a randomly generated promo code
+Get 4 promo sku ids
+        Select top 4 distinct sku_id from saved_items order by timestamp desc 
+If < 4 select count distinct sku_id from transactions for that customer_id to get their most popular items
+Check stock position - for out of stock select next item from saved_items, or next most popular item from transactions. 
+Populate db with 4 promo_sku_ids
+
+
+
+
+Emailing promo 
+Each day send_emails service pulls list of customers whose birthday is a week from today from customers service 
+For each record look up the promo code and 4 promo_sku_ids 
+Promo_sku_ids used to look up product details. Check stock position - for out of stock select next item from saved_items, or next most popular item from transactions. Update birthday_promo.promo_sku_id
+Send email to user, recording audit trail in send_emails db 
+Rate limited to approx 200ms per call to make sure we have plenty of overhead when sending 250,000 emails a day
+
+
+
+
+Customer visiting site 
+Select from customers service where customer_id and customer_birthdate is within + or - 1 week from today
+If a record matched then select from birthday_promo promo_sku_id where promo_used = 0
+Promo_sku_ids used to look up product details. Check stock position - for out of stock select next item from saved_items, or next most popular item from transactions. Update birthday_promo.promo_sku_id
+Get alternate web content
+
+
+
+
+When shopping show promo_price for the 4 promo items
+Carry vector on whether product was added from email or web
+Record this in transactions so this can be looked up for all transactions where promo_used is true
